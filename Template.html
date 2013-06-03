@@ -1,0 +1,479 @@
+#set($myparams = "folderpath=" + $user.psoFolders.getParentFolderPath($sys.item.guid) + "/%")
+#set($completeparams = $rx.asmhelper.combine($sys.params, $myparams)) 
+<div class="cover">
+<div  class="content-tubes">
+<div class="singleinnertube">
+#set($slotname = "efAutoSlotArticle")
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM Article WHERE jcr:path like ":folderpath" AND category=10 ORDER BY sys_title')
+#set($completeparams.template = "SnippetCoverSummaryLink")
+#set($spotlight = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($spotlight.size() > 0)
+ #slot($slotname '<a name="SubjectA"></a><h2>Subject A</h2>' '' '' '' $completeparams)  
+ #efactor_back_to_top()
+#end
+
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efArticle WHERE jcr:path like ":folderpath" AND category=50 ORDER BY sys_title')
+#set($inside = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($inside.size() > 0)
+ #slot($slotname '<a name="SubjectB"></a><h2>Subject B</h2>' '' '' '' $completeparams)  
+ #efactor_back_to_top()
+#end
+
+#set($slotname = "efAutoSlotEvent")
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efEvent WHERE jcr:path like ":folderpath" ORDER BY startdate')
+#set($completeparams.template = "efSnippetEvent")
+#set($events = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($events.size() > 0)
+ #slot($slotname '<h2>Calendar of Upcoming Events</h2><ul>' '' '' '</ul>' $completeparams) 
+
+ <br />
+<p style="margin-left: 0px;">
+View More Events:
+<a href="http://MasterCalendar.aspx"> Public Calendar</a>
+</p>
+ #efactor_back_to_top()
+#end
+</div>
+</div>
+
+<div  class="content-tubes">
+<div class="singleinnertube">
+	#set($slotname = "efAutoSlotArticle")
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efArticle WHERE jcr:path like ":folderpath" AND category=20 ORDER BY sys_title')
+#set($completeparams.template = "efSnippetCoverSummaryLink")
+#set($notebook = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($notebook.size() > 0)
+ #slot($slotname '<a name="SubjectA"></a><h2>Subject A</h2>' '' '' '' $completeparams)  
+ #efactor_back_to_top()
+#end
+	
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efPaperIndex WHERE jcr:path like ":folderpath" AND category=22 ORDER BY sys_title')
+#set($completeparams.template = "efSnippetCoverPagePaperIndex")
+#set($paper_of_the_year = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($paper_of_the_year.size() > 0)
+ #slot($slotname '<a name="SubjectB"></a><h2>Subject B</h2>' '' '' '' $completeparams)  
+  #efactor_back_to_top()
+#end
+
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efPaperIndex WHERE jcr:path like ":folderpath" AND category=30 ORDER BY sys_title')
+#set($completeparams.template = "efSnippetCoverPagePaperIndex")
+#set($dert = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($dert.size() > 0)
+ #slot($slotname '<a name="SubjectC"></a><h2>Subject C</h2>' '' '' '' $completeparams)  
+#end
+
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efPaperIndex WHERE jcr:path like ":folderpath" AND category=40 ORDER BY sys_title')
+#set($dir = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if($dir.size() > 0)
+ #slot($slotname '<a name="SubjectD"></a><h2>Subject D</h2>' '' '' '' $completeparams)  
+#end
+#efactor_back_to_top()
+</div>
+</div>
+
+
+
+
+item link:
+
+#www_html_header_nokeyword()
+
+
+#set($displayname = $sys.item.getProperty("displaytitle").String)
+#set($img_alt = $sys.item.getProperty("img_alt").String)
+#set($img_alt = $rx.codec.escapeForXml($img_alt).replaceAll("&apos;", "&#39;"))
+#set($border = $sys.item.getProperty("img1_border").String.trim())
+#set($summary = $sys.item.getProperty("summary").String)
+#set($audio = $sys.item.getProperty("audio").String.trim())
+#set($video = $sys.item.getProperty("video").String.trim())
+#set($parentContentType=$sys.assemblyItem.getCloneParentItem().getNode().getPrimaryNodeType().getType())
+
+
+
+## Sets the default image to the summary template when one hasn't been entered.
+#if($sys.item.getProperty("img1").String.trim().length() == 0)
+	#set($link = ''+$rxs_navbase+'/images/niehs-logo.jpg')
+#end
+
+
+## if we are calling this from public sight home page, apply the "thumb" class, else use the previous logic (added for RWD effort)
+#if ($parentContentType=="wwwHome")
+	 #set($class = "thumb")
+#else  
+    #if($border.compareToIgnoreCase("Yes")==0)
+    	#set($class = "thumb2")
+    #else
+        #set($class = "nonborder2")
+    #end
+#end
+
+
+#if($audio.compareToIgnoreCase("No") == 0)
+	#set($audio_code = "")
+	#else
+	#set($audio_code = '<img class="mm-audio" width="44" height="13" border="0" alt="Story contains video" src="'+$rxs_navbase+'/images/efcover-mm-audio.gif" />')
+#end
+
+#if($video.compareToIgnoreCase("No") == 0)
+	#set($video_code = " ")
+	#else
+	#set($video_code = '<img class="mm-video" width="44" height="13" border="0" alt="Story contains video" src="'+$rxs_navbase+'/images/efcover-mm-video.gif" />')
+#end
+<h4><a href="$pagelink" class="headline2"><img class="$class" src="$link" width="100" height="100" alt="$img_alt" />$displayname</a> $video_code $audio_code</h4>
+<p>$summary</p>
+
+#if ($parentContentType=="wwwHome")
+<a href="$rx.location.generate($sys.assemblyItem, 'efPageArticle')" class="read-more">…Read more</a>
+#end
+
+<div style="clear:left;"></div>
+
+#www_html_footer()
+
+
+
+global
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+#set($folderpath_parts = $user.psoFolders.getParentFolderPath($sys.item.guid).split("/"))
+#set($folderpath = "//"+$folderpath_parts.get(2)+"/"+$folderpath_parts.get(3)+"/"+$folderpath_parts.get(4)+"/"+$folderpath_parts.get(5)+"/")
+#if($folderpath_parts.size() > 6)
+	#set($article_name = $folderpath_parts.get(6))
+#else
+	#set($article_name = "")
+#end
+
+#set($slotname = "efAutoSlotArticle")
+#set($myparams = "folderpath=${folderpath}%")
+#set($completeparams = $rx.asmhelper.combine($sys.params, $myparams)) 
+#set($completeparams.template = "efSnippetPaper") ##template can be anything since rendering does NOT use it
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efHome WHERE jcr:path like ":folderpath"')
+#set($homes = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if ($homes.size() > 0)
+  #set($home = $homes.get(0))
+  #set($home_url = $rx.location.generate($home))
+#else
+  #set($home_url = "")
+#end
+#set($home_title = "Issue Cover")
+
+#set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efRSSFeed WHERE jcr:path like ":folderpath"')
+#set($rssfeeds = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+#if ($rssfeeds.size() > 0)
+  #set($rssfeed = $rssfeeds.get(0))
+  #set($rssfeed_link = $rx.location.generate($rssfeed))
+#else
+  #set($rssfeed_link = "")
+#end
+
+#set($pdfparams = "folderpath=${folderpath}")
+#set($slotparams = $rx.asmhelper.combine($sys.params, $pdfparams)) 
+#set($slotparams.template = "efSnippetPaper") ##template can be anything since rendering does NOT use it
+#set($slotparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efFile WHERE jcr:path like ":folderpath"')
+#set($pdfs = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $slotparams))
+#if ($pdfs.size() > 0)
+  #set($pdf = $pdfs.get(0))
+  #set($pdf_link = $rx.location.generate($pdf))
+#else
+  #set($pdf_link = "")
+#end
+
+#set($curr_year = $folderpath_parts.get(4))
+#set($curr_month = $folderpath_parts.get(5))
+#set($months = ["January","February","March","April","May","June","July","August","September","October","November","December"])
+#foreach($month in $months)
+  #if($velocityCount == $curr_month)
+	#set($issue = $month)
+  #end
+#end
+
+#if($sys.item.hasProperty("rx:displaytitle"))
+	#set($displaytitle = $sys.item.getProperty("displaytitle").String.trim().replace("<em>","").replace("</em>",""))
+	#set($headtitle = "$issue $curr_year: " + $displaytitle)
+#else
+	#set($headtitle = "$issue $curr_year")
+#end
+
+<title>Environmental Factor - $headtitle</title>
+<link rel="stylesheet" type="text/css" href="$rxs_navbase/styles/efactorscreen.css" media="screen" /> 
+<link rel="stylesheet" type="text/css" href="$rxs_navbase/styles/efactorprint.css" media="print" />
+<script src="$rxs_navbase/javascripts/jquery-1.5.2.min.js"  type="text/javascript" ></script>
+<script src="$rxs_navbase/javascripts/jquery.easing.1.2.js" type="text/javascript"></script>
+#if (!($sys.ltActiveAssembly || $sys.activeAssembly))
+ <script src="http://s7.addthis.com/js/" type="text/javascript"></script>
+#end
+<script src="$rxs_navbase/javascripts/jquery.tablesorter.min.js" type="text/javascripts"></script>
+<script src="$rxs_navbase/javascripts/addthis.js" type="text/javascript"></script>
+<script src="$rxs_navbase/javascripts/usercontrols.js" type="text/javascript"></script>
+<script src="$rxs_navbase/javascripts/nvo.js" type="text/javascript"></script>
+<script src="$rxs_navbase/javascripts/onload.js" type="text/javascript"></script>
+<script src="$rxs_navbase/javascripts/textresizer.js" type="text/javascript"></script>
+</head>
+
+#set($contenttype = $sys.item.getDefinition().getInternalName())
+#if($contenttype == "efArticle" || $contenttype == "efPaperIndex")
+ #set($completeparams.query = 'SELECT rx:sys_contentid, rx:sys_folderid FROM efArticle, efPaperIndex WHERE jcr:path like ":folderpath" ORDER BY category, sys_title')
+ #set($curr_category = $sys.item.getProperty("category").String.trim())
+ #set($curr_systitle = $sys.item.getProperty("sys_title").String.trim())
+ #set($articles = $user.psoSlotTools.getSlotContents($sys.assemblyItem, $slotname, $completeparams))
+
+ #set($num_articles = $articles.size())
+ #foreach($article in $articles)
+	#set($article_category = $article.node.getProperty("category").String.trim())
+	#set($article_systitle = $article.node.getProperty("sys_title").String.trim())
+	#if($article_category.compareToIgnoreCase($curr_category)==0 && $article_systitle.compareToIgnoreCase($curr_systitle)==0) 
+      #if($velocityCount == 1)
+        #set($prev_url = $home_url)
+        #set($prev_title_a_link = $home_title)
+		#set($next_ndx = $velocityCount)
+        #if($next_ndx == $num_articles) ##Has only ONE article 
+          #set($next_url = $home_url)
+          #set($next_title = $home_title)
+		#else 
+          #set($next_article = $articles.get($next_ndx))
+          #set($next_url = $rx.location.generate($next_article))
+          #set($next_title = $next_article.node.getProperty("displaytitle").String.trim())
+##	Trims display title down to the first 4 words		
+			#set($counter = 0)
+			#set($next_title_a_link = "")
+			#set($next_title_a = $next_title.split(" "))
+				#foreach($word in $next_title_a)
+					#if($counter < 4)
+						#set($next_title_a_link = $next_title_a_link+$word+" " )
+					#end 
+				#set($counter = $counter+1)
+				#end
+		#end
+##	Ends display title "trim"
+      #elseif($velocityCount == $num_articles)
+		#set($prev_ndx = $velocityCount - 2)
+		#set($prev_article = $articles.get($prev_ndx))
+        #set($prev_url = $rx.location.generate($prev_article))
+        #set($prev_title = $prev_article.node.getProperty("displaytitle").String.trim())
+##	Trims display title down to the first 4 words		
+		#set($counter = 0)
+			#set($prev_title_a_link = "")
+			#set($prev_title_a = $prev_title.split(" "))
+				#foreach($word in $prev_title_a)
+					#if($counter < 4)
+						#set($prev_title_a_link = $prev_title_a_link+$word+" " )
+					#end 
+				#set($counter = $counter+1)
+				#end
+		#set($next_url = $home_url)
+        #set($next_title_a_link = $home_title)
+	  #else
+		#set($prev_ndx = $velocityCount - 2)
+		#set($prev_article = $articles.get($prev_ndx))
+        #set($prev_url = $rx.location.generate($prev_article))
+        #set($prev_title = $prev_article.node.getProperty("displaytitle").String.trim())	
+##	Trims display title down to the first 4 words
+			#set($counter = 0)
+			#set($prev_title_a_link = "")
+			#set($prev_title_a = $prev_title.split(" "))
+				#foreach($word in $prev_title_a)
+					#if($counter < 4)
+						#set($prev_title_a_link = $prev_title_a_link+$word+" " )
+					#end 
+				#set($counter = $counter+1)
+				#end
+## Ends
+		#set($next_ndx = $velocityCount)
+		#set($next_article = $articles.get($next_ndx))
+        #set($next_url = $rx.location.generate($next_article))
+        #set($next_title = $next_article.node.getProperty("displaytitle").String.trim())
+##	Trims display title down to the first 4 words			
+			#set($counter = 0)
+			#set($next_title_a_link = "")
+			#set($next_title_a = $next_title.split(" "))
+				#foreach($word in $next_title_a)
+					#if($counter < 4)
+						#set($next_title_a_link = $next_title_a_link+$word+" " )
+					#end 
+				#set($counter = $counter+1)
+				#end
+      #end
+	#end
+ #end
+#end
+
+<body>
+  <!-- CONTAINER1280 start -->
+  <div id="container1280">
+    <!-- CONTAINER  start -->
+    <div id="container">
+<a class="skip-nav" href="#content">skip navigation</a>
+<!-- HEADER start -->
+	<div id="header">
+		<a name="top" id="top"></a>
+		<div id="header-logo"> <a href="http://www.###" title="Return to Home">Return to Home</a></div>
+		<div id="center">
+			<h1 id="hdrnew-title"><a href="$home_url" title="Home">News Letter</a></h1>
+			<h2><a href="$home_url">$issue $curr_year</a></h2>
+			 
+		</div>
+		<p id="tagline" title="Your Online Source for News">Your Online Source<br /> for News</p>
+	</div><!-- Closing header -->
+	<div id="hdrnew-topnav">
+		<form method="get" action="http://search">
+        	<div id="hdrnew-topnav-search">
+        		<input type="HIDDEN" name="dropXSL" value=""/>
+        		<input type="hidden" name="pr" value="internet-efactor"/>
+        		<input type="hidden" name="prox" value="page"/>
+        		<input type="hidden" name="rorder" value="500"/>
+        		<input type="hidden" name="rprox" value="500"/>
+        		<input type="hidden" name="rdfreq" value="500"/>
+        		<input type="hidden" name="rwfreq" value="500"/>
+        		<input type="hidden" name="rlead" value="500"/>
+        		<input type="hidden" name="sufs" value="0"/>
+        		<input type="hidden" name="order" value="r"/>
+        		<input type="hidden" name="rdepth" value="0"/>
+        		<fieldset class="search">
+        			<label for="hdrnew-qt">
+        				<input id="hdrnew-qt" name="query" value="Search" title="Search" maxlength="100" onfocus="if(this.value=='Search')this.value='';" type="text"/>
+        			</label>
+        			<input type="image" src="/search-btn.gif" alt="GO" id="hdrnew-search-btn" title="GO"/>
+        		</fieldset>        	
+        	</div><!-- Closing topnav-search -->
+        </form>
+		
+		<ul>
+#if($contenttype == "efArticle" || $contenttype == "efPaperIndex")
+		<li><a href="$home_url">$home_title</a></li>
+#end
+		<li><a href="$pdf_link" id="hdrnew-topnav-pdf">Print Whole Issue</a></li>
+		<li><a href="/news/newsletter/previousissues.cfm">Previous Issues</a></li>
+		<li><a href="/news/newsletter/subscribe-newsletter.cfm">Subscribe</a></li>
+		<li><a href="/feeds/newsletter.xml" id="hdrnew-topnav-rss">RSS Feed</a></li>
+		</ul>
+		
+		<div style="clear:right; height:1px; width:1px; font-size:0;"></div>
+	</div><!-- Closing topnav -->
+
+#if($contenttype == "efHome")	
+	<div id="hdrnew-hnav">
+		<ul>
+		<li><a href="#SubjectA">Subject A</a></li>
+		<li><a href="#SubjectB">Subject B</a></li>
+		<li><a href="#SubjectC">Subject C</a></li>
+		<li><a href="#SubjectD">Subject D</a></li>
+		<li style="border-right:0;"><a href="#inside">Inside the Institute</a></li>
+		</ul>
+	</div>
+#end
+	<!-- HEADER end -->
+
+      <!-- CONTENT ID to match Javascript for Text Size control buttons-->
+       
+        <!-- START USER CONTROLS -->
+		<div id="usercontrols">
+		#if($contenttype == "efArticle" || $contenttype == "efPaperIndex")
+			<div class="addthis-button" >
+				<a class="addthis_button_compact at300m"><span class="at300bs at15t_compact"></span><span style="margin-top:7px;">Share</span></a>
+			</div>
+		#end
+			<div id="sizer">
+				<a href="javascript:IncreaseTextSize()"><img src="$rxs_navbase/images/plus.gif" alt="Increase text size" border="0" title="Increase text size" /></a> 
+				<a href="javascript:DecreaseTextSize()"><img src="$rxs_navbase/images/minus.gif" alt="Decrease text size" border="0" title="Decrease text size" /></a>
+				<input type="image" src="$rxs_navbase/images/printer.gif" alt="Print this page" value="Print This Page" onClick="window.print()" />
+			</div>
+		</div> 
+		<div id="printlogobox">
+			<div id="printlogo"><img src="$rxs_navbase/images/Logo_Print.jpg" alt="National Institute of Environmental Health Sciences" width="342" height="62" /> </div>
+			<div id="printheader"><span class="lineone">News Letter $issue $curr_year</span></div>
+		</div>
+
+		<!-- LEFT CONTENT COLUMN start -->
+#if($contenttype == "efArticle" || $contenttype == "efPaperIndex")
+		<div class="next"> 
+			<a href="$prev_url"><img src="$rxs_navbase/images/back.gif" alt="Previous story" border="0" width="9" height="10" /> Previous</a> 
+			<a href="$next_url" class="indent">Next <img src="$rxs_navbase/images/next.gif" alt="Next story" border="0"  width="9" height="10" /></a>
+		</div>
+	
+	<div id="singleinnertube">
+		
+#end
+
+
+
+<br clear="all" />
+		<!-- END USER CONTROLS -->
+		<!-- END HEADER -->
+ <div id="content">
+	<!-- CONTENT -->
+	#inner()
+	<!-- END CONTENT -->
+
+#if($contenttype == "efArticle" || $contenttype == "efPaperIndex")
+		<br clear="all" />
+		<br />
+		<p class="next">
+			<a href="$prev_url">&quot;$prev_title_a_link...&quot; - previous story&nbsp;<img src="$rxs_navbase/images/back.gif" alt="Previous story" border="0" width="9" height="10" /></a>  
+			<a href="$next_url" class="indent"><img src="$rxs_navbase/images/next.gif" alt="Next story" border="0"  width="9" height="10" />&nbsp;next story - &quot;$next_title_a_link...&quot;</a><br />
+			<a href="$home_url" class="return">$issue $curr_year Cover Page</a>
+		</p>
+		
+	
+		## Display the Back to Top link
+		#efactor_back_to_top()
+#end
+	</div>
+
+	 
+
+	</div>
+	<!-- END CONTIANER -->
+
+
+      <!-- FOOTER start -->
+      <div id="footer">
+        <!-- FOOTERCONTAINER start -->
+        <div id="footercontainer"> 
+		  <span>The Newsletter is produced monthly by the <a href="/index.cfm">#Group#</a><span class="printurl">( #)</span>, Office of Communications and Public Liaison. The content is not copyrighted, and it can be reprinted without permission. If you use parts of this Newsletter in your publication, we ask that you provide us with a copy for our records. We welcome your <a href="mailto:email">comments and suggestions</a>. <span class="printurl">(email)</span></span>
+		  
+          <!-- FOOTERSCREEN start -->
+          <div id="footerscreen"> <br />
+            <span> Director of Communications: <a href="#">name</a> |  
+            Writer-Editor: <a href="#">name</a> |
+            Science Editor: <a href="#">name</a> </span> <br />
+
+		<table cellpadding="8" border="0" cellspacing="0" summary="footer information">
+              <tr>
+                <td width="212">
+					<div id="footerimages"><a href="#" title="LOGO"><img src="$rxs_navbase/images/logo.gif" alt="Logo" border="0" height="45" width="47" class="footerimage-middle" /></a><a href="#" title="link"><img src="$rxs_navbase/images/logo.jpg" alt="Logo" border="0" height="23" width="101" /></a></div>
+				</td>
+				<td><span> <a href="#staff/" title="Staff Directory" >Staff Directory</a> | <a href="#/index.cfm" title="Freedom of Information Act">FOIA</a> |  <a href="#/index.cfm" title="Policies">Policies</a> | <a href="#/index.cfm" class="last" title="Contact Us">Contact Us</a> <br />
+
+                 </span> </td>
+              </tr>
+            </table>
+	
+          </div>
+          <!-- FOOTERSCREEN end -->
+		  
+          <!-- FOOTERPRINT start -->
+          <div id="footerprint">
+            <p>This page URL: #link/$curr_year/$curr_month/$article_name  <br /> $folderpath</p>
+              
+          </div>
+          <!-- FOOTERPRINT end -->
+
+        </div>
+        <!-- FOOTERCONTAINER end -->
+      </div>
+      <!-- FOOTER end -->
+	  
+    </div>
+    <!-- CONTAINER end -->
+	
+  </div>
+  <!-- CONTAINER1280 end-->
+
+
+
+
+</body>
+</html>
