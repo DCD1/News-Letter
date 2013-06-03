@@ -1,0 +1,9 @@
+#Read Me
+
+Code for the cover page of an online news letter.
+
+First section is code for the cover page sturcture, followed by the indiviual link template, followed by the global template.
+
+The cover page of this news letter is automatically generated as the individual articals are added. 
+
+The global template has code for page to page navigation.
